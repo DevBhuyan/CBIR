@@ -1,5 +1,5 @@
-folder = 'E:\Curious Dev B\MINI PROJECT\Brodatz_database\'
-pos_dbase = csvread(strcat(folder, 'pos_db.csv'));
+folder = 'E:\Curious Dev B\MINI PROJECT\ORL all renamed tif\'
+pos_dbase = csvread(strcat(folder, 'pos_db_normalized.csv'));
 
 %Brodatz_max = 70
 %ORL_max = 10
@@ -19,12 +19,18 @@ pos_dbase = csvread(strcat(folder, 'pos_db.csv'));
 
 %first build for 10 imgs
 
-rel = 25;   %25 for brodatz
-for ret = 1:70
+precision = [];
+recall = [];
+prec_avg = [];
+rec_avg = [];
+prec_tot = [];
+rec_tot = [];
+rel = 10;   %25 for brodatz
+for ret = 1:10
     for i = 1:size(pos_dbase, 1)
         rel_ret = 0;
+        cat = ceil(i/rel);
         for j = 1:ret
-            cat = ceil(i/rel);
             if ceil(pos_dbase(i, j)/rel) == cat
                 rel_ret = rel_ret+1;
             end
@@ -55,7 +61,7 @@ for ret = 1:70
     rec_tot(ret) = sum2/(size(pos_dbase, 1)/rel);
 end
 
-index = 1:70;
-dlmwrite(strcat(folder, 'precision and recall vs imgs retrieved.csv'), index, 'delimiter', ',', '-append')
+index = 1:10;
+dlmwrite(strcat(folder, 'precision and recall vs imgs retrieved.csv'), index)
 dlmwrite(strcat(folder, 'precision and recall vs imgs retrieved.csv'), prec_tot, 'delimiter', ',', '-append')
 dlmwrite(strcat(folder, 'precision and recall vs imgs retrieved.csv'), rec_tot, 'delimiter', ',', '-append')

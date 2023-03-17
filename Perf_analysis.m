@@ -1,27 +1,31 @@
-%for each query image at q_ip
-
-folder = 'E:\Curious Dev B\MINI PROJECT\tcia - medical\'
-filelist = dir(fullfile(folder, '*.png'));
+folder = 'E:\Curious Dev B\MINI PROJECT\ORL all renamed tif\'
+filelist = dir(fullfile(folder, '*.tif'));
 dbase = csvread(strcat(folder, 'ftr_db.csv'));
+dbh = size(dbase, 1);
 
-%ORL all renamed tif\111.tif
+norm = 100;
+dbase = dbase./norm;
+file_num = [];
 
-for i=(height(readtable(strcat(folder, 'pos_db.csv'), 'ReadVariableNames', false))+1):size(filelist)
-    q_ip = imread(strcat(folder, num2str(i), '.png'));
-    q = FTR_VECT_BUILD(q_ip);   %is the feature vector for the query image
-
+for i=(height(readtable(strcat(folder, 'pos_db_normalized.csv'), 'ReadVariableNames', false))+1):dbh
+    for ps = 1:dbh
+        if(str2num(filelist(ps).name(1:size(filelist(ps).name, 2)-4)) == i)
+            q = dbase(ps, :);
+            break;
+        end
+    end
+    
     dist = [];
-    for j = 1:size(dbase, 1)
+    for j = 1:dbh
         dist(j) = D1(q, dbase(j, :));
     end
 
-    file_num = [];
     srt = sort(dist);
-    for j = 1:size(dbase, 1) 
-        pos(i, j) = find(dist==srt(j)); %pos will also indicate file_pos numbers
+    for j = 1:70 
+        pos(i, j) = find(dist==srt(j)); %pos will also indicate position in database
         f_pos = str2num(filelist(pos(i, j)).name(1:size(filelist(pos(i, j)).name, 2)-4));
-        file_num(j) = f_pos;
+        file_num(i, j) = f_pos;
     end
     i
-    dlmwrite(strcat(folder, 'pos_db.csv'), file_num, 'delimiter', ',', '-append')
+    dlmwrite(strcat(folder, 'pos_db_normalized.csv'), file_num(i, :), 'delimiter', ',', '-append')
 end
